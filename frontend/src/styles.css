@@ -1,0 +1,31 @@
+:root { --navy: #0b2a66; --gold: #f2a81d; --bg: #fbf8f2; --ink: #1c2540; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; }
+main, footer { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+.nav { display: flex; justify-content: space-between; align-items: center; padding: .8rem 1rem; background: var(--navy); }
+.nav a { color: #fff; text-decoration: none; margin-left: 1rem; }
+.brand { font-weight: 700; margin-left: 0 !important; color: var(--gold) !important; }
+.hero { padding: 3rem 0; }
+.hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); margin: 0 0 .5rem; color: var(--navy); }
+.link { margin-left: 1rem; color: var(--navy); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.card { background: #fff; border-radius: 12px; overflow: hidden; text-decoration: none; color: inherit; border: 1px solid #eee3cf; }
+.card img, .card-ph { width: 100%; height: 160px; object-fit: cover; background: #e8e2d4; display: block; }
+.card-body { padding: .8rem 1rem 1rem; }
+.card-body h3 { margin: .3rem 0; }
+.tag { font-size: .75rem; color: #8a5a00; text-transform: uppercase; letter-spacing: .05em; }
+.price { color: var(--navy); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.chip { border: 1px solid var(--navy); background: #fff; color: var(--navy); padding: .3rem .8rem; border-radius: 999px; cursor: pointer; }
+.chip.on { background: var(--navy); color: #fff; }
+.detail-img { width: 100%; max-height: 360px; object-fit: cover; border-radius: 12px; }
+.wa-btn { display: inline-block; background: #25d366; color: #fff; padding: .7rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; }
+.wa-floating { position: fixed; right: 1rem; bottom: 1rem; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+.form { display: grid; gap: .8rem; max-width: 520px; }
+.form label { display: grid; gap: .25rem; font-weight: 600; font-size: .9rem; }
+.form input, .form textarea { padding: .55rem; border: 1px solid #cfc6b2; border-radius: 6px; font: inherit; }
+.form .check { display: flex; gap: .5rem; align-items: flex-start; font-weight: 400; }
+.form button { background: var(--navy); color: #fff; border: 0; padding: .7rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.hp { position: absolute; left: -9999px; }
+.err { color: #b3261e; }
+.notice { background: #e6f4ea; padding: 1rem; border-radius: 8px; }
