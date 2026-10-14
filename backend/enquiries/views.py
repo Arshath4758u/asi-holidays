@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from packages.models import Package
 
 from .models import WhatsAppClick
+from .notifications import notify_team
 from .serializers import EnquirySerializer
 
 
@@ -19,8 +20,9 @@ class EnquiryCreateView(APIView):
             return Response({"ok": True}, status=status.HTTP_201_CREATED)
         serializer = EnquirySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"ok": True}, status=status.HTTP_201_CREATED)
+        enquiry = serializer.save()
+        notify_team(enquiry)
+        return Response({"ok": True, "name": enquiry.name}, status=status.HTTP_201_CREATED)
 
 
 class WhatsAppClickView(APIView):

@@ -1,14 +1,22 @@
 import { trackWhatsAppClick } from "../api";
+import { trackEvent } from "../analytics";
+import { useSite } from "../site";
 
-const NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "919999999999";
+export function waUrl(number, message) {
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+}
 
-export default function WhatsAppButton({ message, packageSlug, label = "Enquire on WhatsApp", floating = false }) {
-  const href = `https://wa.me/${NUMBER}?text=${encodeURIComponent(message)}`;
-  const onClick = () => trackWhatsAppClick({ package_slug: packageSlug || "", page: window.location.pathname });
+// variant: "gold" | "green" | "outline" | "floating"
+export default function WhatsAppButton({ message, packageSlug = "", label = "WhatsApp us", variant = "gold", className = "" }) {
+  const { whatsapp_number } = useSite();
+  const onClick = () => {
+    trackWhatsAppClick({ package_slug: packageSlug, page: window.location.pathname });
+    trackEvent("whatsapp_click", { page: window.location.pathname, package: packageSlug });
+  };
   return (
     <a
-      className={floating ? "wa-btn wa-floating" : "wa-btn"}
-      href={href}
+      className={`btn btn-${variant} ${className}`}
+      href={waUrl(whatsapp_number, message)}
       target="_blank"
       rel="noopener noreferrer"
       onClick={onClick}

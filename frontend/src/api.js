@@ -11,11 +11,13 @@ async function request(path, options) {
 }
 
 export const getPackages = (params = {}) => {
-  const qs = new URLSearchParams(params).toString();
+  const clean = Object.fromEntries(Object.entries(params).filter(([, v]) => v));
+  const qs = new URLSearchParams(clean).toString();
   return request(`/packages/${qs ? `?${qs}` : ""}`);
 };
 export const getPackage = (slug) => request(`/packages/${slug}/`);
-export const submitEnquiry = (body) =>
-  request("/enquiries/", { method: "POST", body: JSON.stringify(body) });
+export const getSite = () => request("/site/");
+export const getPolicies = () => request("/policies/");
+export const submitEnquiry = (body) => request("/enquiries/", { method: "POST", body: JSON.stringify(body) });
 export const trackWhatsAppClick = (body) =>
   request("/whatsapp-click/", { method: "POST", body: JSON.stringify(body) }).catch(() => {});

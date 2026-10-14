@@ -20,7 +20,9 @@ class Enquiry(models.Model):
     name = models.CharField(max_length=120)
     whatsapp_number = models.CharField(max_length=20)
     destination = models.CharField(max_length=120, blank=True)
+    email = models.EmailField(blank=True)
     departure_date = models.DateField(null=True, blank=True)
+    travel_month = models.CharField(max_length=30, blank=True, help_text="e.g. December")
     travellers = models.PositiveSmallIntegerField(default=1)
     budget = models.CharField(max_length=60, blank=True, help_text="Free text, e.g. 50k-70k per person")
     message = models.TextField(blank=True)
@@ -29,6 +31,7 @@ class Enquiry(models.Model):
     lead_score = models.CharField(max_length=4, choices=Score.choices, blank=True)
     follow_up_notes = models.TextField(blank=True, help_text="Record each follow-up here")
     consent_followup = models.BooleanField(default=False)
+    source = models.CharField(max_length=20, blank=True, help_text="package_form, contact_form")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -1,33 +1,45 @@
-import { Link, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import WhatsAppButton from "./components/WhatsAppButton";
+import { trackPageView } from "./analytics";
 import Home from "./pages/Home";
 import Packages from "./pages/Packages";
 import PackageDetail from "./pages/PackageDetail";
-import EnquiryForm from "./components/EnquiryForm";
-import WhatsAppButton from "./components/WhatsAppButton";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import ThankYou from "./pages/ThankYou";
+import Policies from "./pages/Policies";
+
+function RouteEffects() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (!hash) window.scrollTo(0, 0);
+    trackPageView(pathname);
+  }, [pathname]);
+  return null;
+}
 
 export default function App() {
   return (
     <>
-      <header className="nav">
-        <Link to="/" className="brand">ASI Holidays</Link>
-        <nav>
-          <Link to="/packages">Packages</Link>
-          <Link to="/contact">Contact</Link>
-        </nav>
-      </header>
+      <RouteEffects />
+      <Header />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/packages" element={<Packages />} />
           <Route path="/packages/:slug" element={<PackageDetail />} />
-          <Route path="/contact" element={<section><h2>Plan your trip with us</h2><EnquiryForm /></section>} />
-          <Route path="*" element={<p>Page not found.</p>} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/thank-you" element={<ThankYou />} />
+          <Route path="/policies" element={<Policies />} />
+          <Route path="*" element={<div className="wrap section"><p>Page not found. <Link className="link" to="/">Go home</Link></p></div>} />
         </Routes>
       </main>
-      <footer>
-        <p>© ASI Holidays</p>
-      </footer>
-      <WhatsAppButton floating label="WhatsApp" message="Hi ASI Holidays, I have a question." />
+      <Footer />
+      <WhatsAppButton variant="floating" label="WhatsApp us" message="Hi ASI Holidays, I have a question." />
     </>
   );
 }

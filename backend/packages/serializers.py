@@ -8,13 +8,15 @@ def _lines(text):
 
 
 class PackageListSerializer(serializers.ModelSerializer):
+    region_label = serializers.CharField(source="get_region_display", read_only=True)
     category_label = serializers.CharField(source="get_category_display", read_only=True)
 
     class Meta:
         model = Package
         fields = [
-            "id", "title", "slug", "category", "category_label", "destination",
-            "duration_days", "price_from", "summary", "image", "is_featured",
+            "id", "title", "slug", "region", "region_label", "category", "category_label",
+            "destination", "duration_days", "price_from", "summary", "image", "is_featured",
+            "suits_vegetarian", "suits_jain", "suits_halal", "suits_kids", "suits_seniors",
         ]
 
 
