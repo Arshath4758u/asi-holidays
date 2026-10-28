@@ -26,7 +26,7 @@ class Package(models.Model):
     inclusions = models.TextField(blank=True, help_text="One item per line")
     exclusions = models.TextField(blank=True, help_text="One item per line")
     image = models.ImageField(upload_to="packages/", blank=True)
-
+    moods = models.CharField(max_length=80, blank=True, help_text="Comma separated, for the mood quiz: relax, adventure, family, culture")
     # Filters shown on the Packages page
     suits_vegetarian = models.BooleanField("Vegetarian food available", default=False)
     suits_jain = models.BooleanField("Jain food available", default=False)

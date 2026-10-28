@@ -20,4 +20,17 @@ export const getSite = () => request("/site/");
 export const getPolicies = () => request("/policies/");
 export const submitEnquiry = (body) => request("/enquiries/", { method: "POST", body: JSON.stringify(body) });
 export const trackWhatsAppClick = (body) =>
-  request("/whatsapp-click/", { method: "POST", body: JSON.stringify(body) }).catch(() => {});
+request("/whatsapp-click/", { method: "POST", body: JSON.stringify(body) }).catch(() => {});
+
+
+// Phase 2
+export const planTrip = (query) => request("/ai/plan/", { method: "POST", body: JSON.stringify({ query }) });
+export const getQuiz = () => request("/quiz/");
+export const quizResult = (answers) => request("/quiz/result/", { method: "POST", body: JSON.stringify({ answers }) });
+export const createRoom = (body) => request("/rooms/", { method: "POST", body: JSON.stringify(body) });
+export const getRoom = (code) => request(`/rooms/${code}/`);
+export const voteRoom = (code, body) => request(`/rooms/${code}/vote/`, { method: "POST", body: JSON.stringify(body) });
+export const submitQuoteCheck = (body) => request("/ai/quote-check/", { method: "POST", body: JSON.stringify(body) });
+
+// Phase 3
+export const smartSearch = (body) => request("/search/", { method: "POST", body: JSON.stringify(body) });

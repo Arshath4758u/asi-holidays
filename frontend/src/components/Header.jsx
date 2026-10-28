@@ -8,6 +8,7 @@ const LINKS = [
   ["International", "/packages?region=international"],
   ["Honeymoon", "/packages?category=honeymoon"],
   ["Group tours", "/packages?category=group"],
+  ["Plan with AI", "/plan"],
   ["Contact", "/contact"],
 ];
 

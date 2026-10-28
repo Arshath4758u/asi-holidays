@@ -4,7 +4,7 @@ import { getPackages } from "../api";
 import { useDocumentTitle } from "../hooks";
 import PackageCard from "../components/PackageCard";
 import WhatsAppButton from "../components/WhatsAppButton";
-
+import SearchBox from "../components/SearchBox";
 const KINDS = [
   ["India holidays", "/packages?region=india"],
   ["International tours", "/packages?region=international"],
@@ -19,6 +19,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [popular, setPopular] = useState([]);
   const [q, setQ] = useState({ destination: "", month: "", travellers: "" });
+  const [oneLine, setOneLine] = useState("");
 
   useEffect(() => {
     getPackages({ featured: "1" })
@@ -33,6 +34,11 @@ export default function Home() {
     if (q.month) p.set("month", q.month);
     if (q.travellers) p.set("travellers", q.travellers);
     navigate(`/contact?${p}`);
+  };
+
+  const onPlan = (e) => {
+    e.preventDefault();
+    if (oneLine.trim().length >= 3) navigate(`/plan?q=${encodeURIComponent(oneLine.trim())}`);
   };
 
   return (
@@ -67,6 +73,7 @@ export default function Home() {
       <section className="section">
         <div className="wrap">
           <h2>Find your kind of holiday</h2>
+          <SearchBox />
           <div className="kinds">
             {KINDS.map(([label, to]) => (
               <Link key={label} to={to} className="kind"><div className="ph" /><h3>{label}</h3></Link>
@@ -80,6 +87,17 @@ export default function Home() {
           <h2>Popular packages</h2>
           {popular.length ? <div className="grid">{popular.map((p) => <PackageCard key={p.id} pkg={p} />)}</div> : <p>Packages coming soon.</p>}
           <p><Link to="/packages" className="link">Browse all packages</Link></p>
+        </div>
+      </section>
+
+      <section className="band ai-band">
+        <div className="wrap">
+          <h2>Describe your trip in one line</h2>
+          <p>Our AI trip planner shows matching packages. A consultant confirms every quote.</p>
+          <form className="planner" onSubmit={onPlan}>
+            <input value={oneLine} onChange={(e) => setOneLine(e.target.value)} placeholder="5 days in Kerala for a family of 4 in December" aria-label="Describe your trip" maxLength={300} />
+            <button className="btn btn-gold">Plan my trip</button>
+          </form>
         </div>
       </section>
 

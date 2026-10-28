@@ -1,10 +1,17 @@
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-change-me")
-DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+# Debug is OFF unless DJANGO_DEBUG=1 is set (local development only).
+DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY is not set. Set it before running the site.")
+    SECRET_KEY = "dev-only-change-me"  # allowed only in DEBUG
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 INSTALLED_APPS = [
@@ -56,12 +63,14 @@ if os.environ.get("USE_SQLITE") == "1":
         "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3"}
     }
 else:
+    if not DEBUG and not os.environ.get("DB_PASSWORD"):
+        raise ImproperlyConfigured("DB_PASSWORD is not set. Set it before running with PostgreSQL.")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": os.environ.get("DB_NAME", "asiholidays"),
             "USER": os.environ.get("DB_USER", "asi"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", "asi_dev_password"),
+            "PASSWORD": os.environ.get("DB_PASSWORD") or "asi_dev_password",
             "HOST": os.environ.get("DB_HOST", "localhost"),
             "PORT": os.environ.get("DB_PORT", "5432"),
         }
@@ -110,3 +119,19 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "1") == "1"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "ASI Holidays <no-reply@asiholidays.in>")
 ENQUIRY_NOTIFY_EMAILS = [e.strip() for e in os.environ.get("ENQUIRY_NOTIFY_EMAILS", "").split(",") if e.strip()]
+
+
+# --- Phase 2: AI, WhatsApp concierge ---
+INSTALLED_APPS += ["ai", "trips", "insights"]
+TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"].update(
+    {"ai": "20/hour", "search": "40/hour", "quote_check": "5/hour", "room_create": "10/hour", "room_vote": "120/hour"}
+)
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5")
+ANTHROPIC_FAST_MODEL = os.environ.get("ANTHROPIC_FAST_MODEL", "claude-haiku-5-5")
+AI_ASYNC = os.environ.get("AI_ASYNC", "1") == "1"  # run AI after the response; use a task queue in production
+WHATSAPP_VERIFY_TOKEN = os.environ.get("WHATSAPP_VERIFY_TOKEN", "")
+WHATSAPP_APP_SECRET = os.environ.get("WHATSAPP_APP_SECRET", "")
+WHATSAPP_TOKEN = os.environ.get("WHATSAPP_TOKEN", "")
+WHATSAPP_PHONE_NUMBER_ID = os.environ.get("WHATSAPP_PHONE_NUMBER_ID", "")

@@ -1,17 +1,36 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from ai.models import ReplyDraft
+
 from .models import Enquiry, WhatsAppClick
+
+SCORE_COLOURS = {"hot": "#b3261e", "warm": "#b26a00", "cold": "#4a5a8a"}
+
+
+class ReplyDraftInline(admin.StackedInline):
+    model = ReplyDraft
+    extra = 0
+    can_delete = False
+    fields = ("status", "body", "ai_original", "open_link")
+    readonly_fields = ("ai_original", "open_link")
+
+    @admin.display(description="Send")
+    def open_link(self, obj):
+        if obj.pk and obj.status != ReplyDraft.Status.REJECTED:
+            return format_html('<a href="{}" target="_blank" rel="noopener">Open in WhatsApp</a>', obj.whatsapp_url)
+        return "-"
 
 
 @admin.register(Enquiry)
 class EnquiryAdmin(admin.ModelAdmin):
-    list_display = ("name", "chat", "destination", "travel", "travellers", "budget", "status", "lead_score", "created_at")
+    list_display = ("name", "chat", "destination", "travel", "travellers", "budget", "score", "status", "created_at")
     list_editable = ("status",)
     list_filter = ("status", "lead_score", "package", "source")
     search_fields = ("name", "whatsapp_number", "email", "destination")
     date_hierarchy = "created_at"
-    readonly_fields = ("created_at",)
+    readonly_fields = ("created_at", "ai_summary", "language")
+    inlines = [ReplyDraftInline]
     actions = ["mark_contacted", "mark_quoted", "mark_won", "mark_lost"]
 
     @admin.display(description="WhatsApp")
@@ -24,6 +43,12 @@ class EnquiryAdmin(admin.ModelAdmin):
     @admin.display(description="Travel")
     def travel(self, obj):
         return obj.departure_date or obj.travel_month or "-"
+
+    @admin.display(description="Lead", ordering="lead_score")
+    def score(self, obj):
+        if not obj.lead_score:
+            return "-"
+        return format_html('<b style="color:{}">{}</b>', SCORE_COLOURS.get(obj.lead_score, "#000"), obj.get_lead_score_display())
 
     def _set(self, request, queryset, status, label):
         n = queryset.update(status=status)

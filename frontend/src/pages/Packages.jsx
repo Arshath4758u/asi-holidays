@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { getPackages } from "../api";
 import { useDocumentTitle } from "../hooks";
 import PackageCard from "../components/PackageCard";
+import SearchBox from "../components/SearchBox";
 
 const GROUPS = [
   { key: "region", title: "Where", options: [["india", "India"], ["international", "International"]] },
@@ -36,6 +37,7 @@ export default function Packages() {
       <div className="wrap">
         <h1 className="h2">Holiday packages</h1>
         <p className="lead-dark">Browse approved ASI Holidays packages, or tell us what you need.</p>
+        <SearchBox />
         <div className="layout-filters">
           <aside className="filters">
             <h3>Filters</h3>

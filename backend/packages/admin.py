@@ -11,7 +11,7 @@ class PackageAdmin(admin.ModelAdmin):
     search_fields = ("title", "destination")
     prepopulated_fields = {"slug": ("title",)}
     fieldsets = (
-        (None, {"fields": ("title", "slug", "destination", "region", "category", "duration_days", "price_from", "summary", "image")}),
+        (None, {"fields": ("title", "slug", "destination", "region", "category", "duration_days", "price_from", "summary", "image", "moods")}),
         ("Plan", {"fields": ("itinerary", "inclusions", "exclusions")}),
         ("Filters", {"fields": ("suits_vegetarian", "suits_jain", "suits_halal", "suits_kids", "suits_seniors")}),
         ("Visibility", {"fields": ("is_published", "is_featured")}),

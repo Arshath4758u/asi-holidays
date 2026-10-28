@@ -12,6 +12,8 @@ urlpatterns = [
     path("api/", include("packages.urls")),
     path("api/", include("enquiries.urls")),
     path("api/", include("content.urls")),
+    path("api/", include("ai.urls")),
+    path("api/", include("trips.urls")),
 ]
 
 if settings.DEBUG:

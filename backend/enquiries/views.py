@@ -22,6 +22,8 @@ class EnquiryCreateView(APIView):
         serializer.is_valid(raise_exception=True)
         enquiry = serializer.save()
         notify_team(enquiry)
+        from ai.services import process_enquiry, run_background  # Phase 2: score + summary + reply draft
+        run_background(process_enquiry, enquiry.pk)
         return Response({"ok": True, "name": enquiry.name}, status=status.HTTP_201_CREATED)
 
 

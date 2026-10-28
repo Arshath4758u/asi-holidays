@@ -33,6 +33,8 @@ class Enquiry(models.Model):
     consent_followup = models.BooleanField(default=False)
     source = models.CharField(max_length=20, blank=True, help_text="package_form, contact_form")
     created_at = models.DateTimeField(auto_now_add=True)
+    ai_summary = models.TextField(blank=True)
+    language = models.CharField(max_length=30, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

@@ -1,55 +1,74 @@
-# ASI Holidays - Phase 1 starter
+# ASI Holidays - Phase 1
 
 Django + PostgreSQL backend, React (Vite) frontend. Enquiry-first travel site.
 
-## Run locally
+## Upgrading an existing copy (you already ran the first starter)
 
-### 1. Database
-```
-docker compose up -d
-```
-(No Docker? `USE_SQLITE=1` in the backend env skips Postgres for quick testing.)
+1. Unzip this over your project folder and overwrite files.
+2. In `backend/` (venv active): `python manage.py migrate`
+   (old packages are converted automatically: category "india"/"international" moves to the new Region field)
+3. Restart `runserver` and `npm run dev`.
 
-### 2. Backend
+## Run from scratch
+
+Backend (Windows PowerShell shown; use `source .venv/bin/activate` on Mac/Linux):
 ```
 cd backend
-python -m venv .venv && source .venv/bin/activate
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env        # then export the vars, or set them in your shell
+$env:USE_SQLITE="1"          # skip this line if you use Postgres (docker compose up -d)
 python manage.py migrate
 python manage.py createsuperuser
+python manage.py seed_sample # optional: 6 demo packages (python manage.py seed_sample --clear removes them)
 python manage.py runserver
 ```
-Admin: http://localhost:8000/admin/ (add packages, set Published, manage enquiries)
-
-### 3. Frontend
+Frontend (second terminal):
 ```
 cd frontend
-cp .env.example .env        # set VITE_WHATSAPP_NUMBER
+copy .env.example .env
 npm install
 npm run dev
 ```
-Site: http://localhost:5173 (Vite proxies /api and /media to Django)
+Site: http://localhost:5173  Admin: http://localhost:8000/admin/
 
-## What is built
+## First things to do in the admin
+1. **Site settings**: WhatsApp number (digits with country code, e.g. 919876543210), phone, email, address, opening hours, "response time" (shown on the Thank-you page), about text, mission.
+2. **Policy pages**: paste the client's Privacy, Terms and Cancellation text.
+3. **Packages**: add real packages (Published = on the site, Featured = Popular packages on Home).
+4. Put the client's logo at `frontend/public/logo.png` and an optional hero photo at `frontend/public/hero.jpg`.
 
-| Phase 1 item | Where |
+## Phase 1 scope vs the UI designs
+
+| Design screen | Status |
 |---|---|
-| Package catalogue + detail pages | `backend/packages`, `frontend/src/pages` |
-| Enquiry form (name, WhatsApp, destination, date, travellers, budget) | `backend/enquiries`, `EnquiryForm.jsx` |
-| WhatsApp button with pre-filled message + click tracking | `WhatsAppButton.jsx`, `WhatsAppClick` model |
-| Admin dashboard | Django admin (no code needed to edit packages, prices, enquiries, follow-up notes) |
-| Spam protection | Honeypot field + DRF rate limits (10 enquiries/hour/IP) |
-| No payment data stored | By design, none collected |
+| Home (search, trust strip, holiday kinds, popular packages, WhatsApp band) | Built |
+| Holiday packages (filters: where, trip type, food, travelling with) | Built |
+| Package detail (itinerary, included, enquiry form, WhatsApp) | Built |
+| About | Built |
+| Contact (form, details, map, WhatsApp) | Built |
+| Thank-you | Built |
+| Policies | Built (client supplies text) |
+| Mobile (menu, floating WhatsApp) | Built |
+| Admin: packages, enquiries, status, follow-up notes, WhatsApp link per lead | Built (Django admin) |
+| Email alert to team on new enquiry | Built (set ENQUIRY_NOTIFY_EMAILS) |
+| WhatsApp click tracking + Google Analytics events | Built (set VITE_GA_ID) |
+| Spam protection (honeypot + rate limit), consent required | Built |
+| Home "Describe your trip" AI band, AI planner, quiz, group room, lead scoring, reply drafts | Phase 2, not built |
+| Dashboard counter cards, Reports, SEO screens | Not built (Django admin lists and filters stand in) |
 
-## Phase 2 hooks already in place
-- `Enquiry.lead_score` (hot/warm/cold) is reserved for lead scoring.
-- `Enquiry.consent_followup` records consent before follow-ups.
-- Keep AI behind Django views (e.g. `backend/ai/`) so API keys stay server-side and only approved, published packages are ever suggested.
+## API
+- `GET /api/packages/?region=india,international&category=honeymoon,family&food=veg,jain&with=kids&featured=1`
+  (region and category match ANY; food and with match ALL)
+- `GET /api/packages/<slug>/`
+- `POST /api/enquiries/`  `POST /api/whatsapp-click/`
+- `GET /api/site/`  `GET /api/policies/`
 
-## Known gaps to decide before launch
-1. **SEO:** a client-rendered React app is weak for destination-specific SEO, which the proposal promises. Options: move the frontend to Next.js, or prerender the package pages at build time. Decide this before Week 3.
-2. Production: set `DJANGO_DEBUG=0`, a real `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, serve media from object storage or nginx, configure backups.
-3. Policy pages (privacy, cancellation, terms) need client content.
-4. Google Analytics / event tracking not wired yet.
-5. Email/WhatsApp notification to the team on new enquiry not wired yet (admin list only).
+## Before launch
+- **SEO**: a client-rendered React app is weak for destination pages. Decide: Next.js, or prerender. Not solved here.
+- Production env: `DJANGO_DEBUG=0`, real `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, SMTP settings, HTTPS, database backups.
+- Serve uploaded images (MEDIA) from nginx or object storage; Django only serves them in debug.
+- Email is sent inside the request. Fine at this volume; move to a background job if enquiries grow.
+
+## Tests
+`cd backend && python manage.py test`  (16 tests: filters, enquiry validation, consent, honeypot, email, site settings)
